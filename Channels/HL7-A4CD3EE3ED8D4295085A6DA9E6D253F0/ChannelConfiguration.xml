@@ -1,0 +1,37 @@
+<channel
+   name="HL7"
+   guid="A4CD3EE3ED8D4295085A6DA9E6D253F0"
+   description=""
+   start_automatically="false"
+   logging_level="1"
+   use_message_filter="false">
+   <to_file
+      output_dir="F:/Data Integration/HL7/Processed/"
+      write_to_separate_file="true"
+      output_single_filename=""
+      use_prepended_info_as_filename="false"
+      output_file_id_type="0"
+      output_filename_mask="output_%i.hl7"
+      temp_file_extension="tmp"
+      count_of_padding_digit="5"
+      ftp_username="admin"
+      ftp_password="NR3W7j8ij+eq0l79pER79JYfMjHvGRNH0X1eLpZtUTc="
+      sftp_authentication_method="user_password"
+      use_ftp="false">
+      <dequeue_list>
+         <dequeue
+            source_name="self"
+            dequeue_guid="27916EDE2698B6EE0F16EFB42F058DB4"/>
+      </dequeue_list>
+   </to_file>
+   <from_llp_listener
+      ack_vmd_path="C:/Program Files/iNTERFACEWARE/Iguana/autoack.vmd"
+      port="5345"
+      connection_timeout="30"
+      unlimited_connection_timeout="false"
+      ack_style="fast"
+      use_ssl="true"
+      ssl_certificate_file="F:\Iguana\Certificates\acupera_wildcard_2016_cert.pem"
+      ssl_private_key_file="F:\Iguana\Certificates\acupera_wildcard_2016_key_passphraseremoved.pem"
+      ssl_verify_peer="false"/>
+</channel>
