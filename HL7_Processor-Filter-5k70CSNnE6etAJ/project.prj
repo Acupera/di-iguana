@@ -1,0 +1,19 @@
+{
+    "LocalDependencies": [
+        "combinedPatient.lua",
+        "mapper.lua",
+        "queue.lua"
+    ],
+    "LuaDependencies": [
+        "date.parse"
+    ],
+    "OtherDependencies": [
+        "example/demo.vmd"
+    ],
+    "timestamp": "1480601813",
+    "version_info": {
+        "build": 0,
+        "major": 6,
+        "minor": 0
+    }
+}

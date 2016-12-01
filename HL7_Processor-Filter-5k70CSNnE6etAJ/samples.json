@@ -1,0 +1,12 @@
+{
+    "Samples": [
+        {
+            "Message": "MSH|^~\\&|GPMS|PHA||ENGINE|201611181153||ADT^A28|201611181153110|P|2.2||||||\rEVN|A28|201611181153|||IMPRT|\rPID|1||8643|MO0008208520|DAVIS^SHAWNA^||19901208|F|||609 CIMMARRON TRL^^BELTON^MO^64012||^^^||^|U||||||U^UNKNOWN||||||N||\rNK1|1|^^|09^UNKNOWN||||EP^EMERGENCY CONTACT PERSON|\rPV1|1||||||F02^JASPER FULLARD|^|||||||||||||||||||||||||||||||||1||||||||||\rGT1|1||DAVIS^SHAWNA^||609 CIMMARRON TRL^^BELTON^MO^64012|||||||||||||||||\rIN1|1|1|CHSP|CENTENE - HOME STATE PLAN|PO BOX 4050^CLAIMS PROCESSING DEPT^FARMINGTON^MO^636403829||(855)694-4663|||||20150101|||O|DAVIS^SHAWNA^|1|19901208|609 CIMMARRON TRL^^BELTON^MO^64012|||1||||||||||I||||MO00082085201|0||||||F|^^^^^||||||\rIN2|1|272160963|^||||||||||||||||||||||||||||\rZIN|Y|||||||0|||||||||||||||||||||0|0|0|0|0|0|0|0|$|$|$|$|$|$|$|$|0|0|0|0|0|0|0|0|||||||||||||^|CMCD|1^1|\rZPD|1||MO-LAB2U|||||||||||||||||||0|0|0|0|0|0|0|0|0|0||||||||||||||||||||||||^^^^||||||^^|09^UNKNOWN||||||\rZAM|1||||MO00082085201||||||N|| 0||||0||0||||FULL|||0|0|0|0|0|0|\r",
+            "Name": "Message 1"
+        },
+        {
+            "Message": "MSH|^~\\&|iNTERFACEWARE|EAST_RADIOLOGY|REPOSITORY|XYZ|||ORU^R01|MESA3b781ae8|P|2.3.1|\rPID|||CR3^^^ADT1||CRTHREE^PAUL||23-Oct-2011||||||4944951234|3085751||||PatientAcct|\rOBR|||||||20010501141500.0000||||||||||||||||||F|\rOBX|1|HD|SR Instance UID||1.113654.1.2001.30.2.1||||||F|\rOBX|2|TX|SR Text||Radiology Report History Cough Findings PA evaluation of the chest demonstrates the lungs to be expanded and clear.  Conclusions Normal PA chest x-ray.||||||F|\rZID||paul.crthree@mesa_rpt_mgr.com|||\r\n",
+            "Name": "Message 2"
+        }
+    ]
+}

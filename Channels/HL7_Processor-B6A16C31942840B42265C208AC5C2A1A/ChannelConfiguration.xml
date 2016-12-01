@@ -1,0 +1,48 @@
+<channel
+   name="HL7 Processor"
+   guid="B6A16C31942840B42265C208AC5C2A1A"
+   description=""
+   start_automatically="false"
+   logging_level="1"
+   use_message_filter="true">
+   <to_mapper
+      guid="HL7_Processor-To-gyfakpam9crunZ"
+      commit_id="2c9a23edcd3df5ca3f954aafbd19381a7866f217"
+      commit_comment="Initial commit">
+      <dequeue_list>
+         <dequeue
+            source_name="self"
+            dequeue_guid="35325DDE82A4BF34016B2E049DA61196"/>
+      </dequeue_list>
+   </to_mapper>
+   <from_file
+      file_type="HL7"
+      prepend_file_info="false"
+      eof_char=""
+      poll_time="10000"
+      max_message_size="15728640"
+      source_dir="C:/Temp/Iguana/HL7/Incoming/"
+      source_file_extension=".hl7"
+      archive_processed_files="true"
+      processed_dir="C:/Temp/Iguana/HL7/Processed/"
+      error_dir="C:/Temp/Iguana/HL7/Error/"
+      ignored_segments=""
+      segment_delimiter="0x0D"
+      message_delimiter="0x0A"
+      minimum_file_age="0"
+      escape_8bit="false"
+      escape_char=" "
+      sftp_authentication_method="user_password"/>
+   <message_filter
+      filter_after_logging="true"
+      log_pre_post_filter_message="true"
+      filter_vmd_path=""
+      transformation_mode="0"
+      scripted_transformation_configuration_name="default"
+      error_handling="0"
+      use_translator_filter="true"
+      translator_guid="HL7_Processor-Filter-5k70CSNnE6etAJ"
+      translator_commit_id="3e902d0dd7e02e7666308d4930fd140539665e30"
+      translator_commit_comment="Added CombinedPatient definitions and mappings.">
+   </message_filter>
+</channel>
