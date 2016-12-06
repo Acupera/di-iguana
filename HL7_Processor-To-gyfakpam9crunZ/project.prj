@@ -1,8 +1,10 @@
 {
     "LocalDependencies": [],
-    "LuaDependencies": [],
+    "LuaDependencies": [
+        "acupera.azureStorageGateway"
+    ],
     "OtherDependencies": [],
-    "timestamp": "1480601813",
+    "timestamp": "1481041157",
     "version_info": {
         "build": 0,
         "major": 6,

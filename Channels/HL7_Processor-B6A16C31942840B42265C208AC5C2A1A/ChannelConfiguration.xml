@@ -7,8 +7,8 @@
    use_message_filter="true">
    <to_mapper
       guid="HL7_Processor-To-gyfakpam9crunZ"
-      commit_id="2c9a23edcd3df5ca3f954aafbd19381a7866f217"
-      commit_comment="Initial commit">
+      commit_id="4a86718ba0aa20a3fc508f78970fd192d3756775"
+      commit_comment="send to storage">
       <dequeue_list>
          <dequeue
             source_name="self"
@@ -42,7 +42,7 @@
       error_handling="0"
       use_translator_filter="true"
       translator_guid="HL7_Processor-Filter-5k70CSNnE6etAJ"
-      translator_commit_id="3e902d0dd7e02e7666308d4930fd140539665e30"
-      translator_commit_comment="Added CombinedPatient definitions and mappings.">
+      translator_commit_id="85786cf6bff643722748eefa35d8b63866696f95"
+      translator_commit_comment="Refactorings, restructuring, addition of logic">
    </message_filter>
 </channel>

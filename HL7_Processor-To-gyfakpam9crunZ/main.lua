@@ -1,4 +1,5 @@
--- The main function is the first function called from Iguana.
--- The Data argument will contain the message to be processed.
+local azureStorageGateway = require "acupera.azureStorageGateway"
+
 function main(Data)
+   azureStorageGateway.queue.send(Data)
 end

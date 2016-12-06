@@ -1,16 +1,16 @@
 {
-    "LocalDependencies": [
-        "combinedPatient.lua",
-        "mapper.lua",
-        "queue.lua"
-    ],
+    "LocalDependencies": [],
     "LuaDependencies": [
+        "acupera.azureStorageGateway",
+        "acupera.combinedPatient",
+        "acupera.hl7Mapper",
+        "acupera.hl7MapperCustom",
         "date.parse"
     ],
     "OtherDependencies": [
         "example/demo.vmd"
     ],
-    "timestamp": "1480601813",
+    "timestamp": "1481041157",
     "version_info": {
         "build": 0,
         "major": 6,

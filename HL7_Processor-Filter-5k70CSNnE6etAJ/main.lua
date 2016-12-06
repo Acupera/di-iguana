@@ -1,20 +1,18 @@
-local mapper = require "mapper"
-local queue = require "queue"
+local mapper = require "acupera.hl7Mapper"
 
 function main(Data)
-   local hl7Message, Name = hl7.parse{vmd = 'example/demo.vmd', data = Data}
+   local hl7Message, vmdConfigurationName = hl7.parse{vmd = 'example/demo.vmd', data = Data}
    
-   if Name == "ADT" then
-      local patient = mapper.Map(hl7Message, hl7Message.MSH[9][2]:nodeValue())
+   if not mapper.isSupported(hl7Message) then
+      local messageCode = hl7Message.MSH[9][1]:nodeValue()
+      local messageEvent = hl7Message.MSH[9][2]:nodeValue()
       
-      if patient ~= nil then
-         queue.send(patient)
-      else
-         iguana.logInfo("This " .. Name .. " " .. messageType .. " message was filtered.")
-      end
-   else
-      iguana.logInfo("This " .. Name .. " message was filtered.")
+      iguana.logInfo("" .. messageCode .. " " .. messageEvent .. " messages for .vmd configuration " .. vmdConfigurationName .. " are not supported by this channel.")
+      
+      return
    end
+   
+   queue.push{data = mapper.map(hl7Message)}
    
    return
 end
