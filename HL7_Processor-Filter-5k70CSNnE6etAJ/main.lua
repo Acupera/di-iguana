@@ -12,7 +12,7 @@ function main(Data)
       return
    end
    
-   queue.push{data = mapper.map(hl7Message)}
+   queue.push{data = json.serialize{data=mapper.map(hl7Message)}}
    
    return
 end
