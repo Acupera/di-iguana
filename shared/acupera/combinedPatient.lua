@@ -2,6 +2,7 @@ local function patient()
    local patient = {
       PatientSearch = {
          PatientIdentifiers = {},
+         PatientCoverages = {},
          FirstName = '',
          LastName = '',
          MiddleName = '',
@@ -17,15 +18,19 @@ local function patient()
          LastName = '',
          MiddleName = '',
          DateOfBirth = '',
+         DateOfDeath = '',
          Gender = '',
          SSN = '',
          Race = '',
          Ethnicity = '',
          MaritalStatus = '',
-         Facility = ''
+         Facility = '',
+         TimeZone = ''
       },
       Addresses = {},
+      Coverages = {},
       Contacts = {},
+      Identifiers = {},
       Languages = {},
       Tags = {}
    }
@@ -35,11 +40,15 @@ end
 
 local function address()
    return {
+      AddressType = '',
       AddressLine1 = '',
+      Address2 = '',
       City = '',
       State = '',
       Postal = '',
-      LastVerifiedDate = ''
+      LastVerifiedDate = '',
+      IsPreferred = '',
+      TimeZone = ''
    }
 end
 
@@ -47,11 +56,41 @@ local function contact()
 	return {
       Value = '',
       ContactMethodType = '',
-      LastVerifiedDate = ''
+      LastVerifiedDate = '',
+      TimeZone = ''
+   }
+end
+
+local function coverage()
+   return {
+      StartDate = '',
+      EndDate = '',
+      LastCoverageValidationDateTime = '',
+      IsPrimary = '',
+      RelationshipToSubscriber = '',
+      TimeZone = ''
+   }
+end
+
+local function coverageSearchInfo()
+   return {
+      Client = '',
+      HealthPlan = '',
+      LineOfBusiness = ''
    }
 end
 
 local function identifier()
+   return {
+      AssigningAuthority = '',
+      IdentifierValue = '',
+      IdentifierType = '',
+      IdentifierName = '',
+      StartDate = ''
+   }
+end
+
+local function identifierInfo()
    return {
       AssigningAuthority = '',
       IdentifierValue = '',
@@ -70,7 +109,8 @@ local function tag()
    return {
       Name = '',
       Value = '',
-      Type = ''
+      Type = '',
+      TimeZone = ''
    }
 end
 
@@ -78,7 +118,10 @@ return {
    address = address,
    patient = patient,
    contact = contact,
+   coverage = coverage,
+   coverageSearchInfo = coverageSearchInfo,
    identifier = identifier,
+   identifierInfo = identifierInfo,
    language = language,
    tag = tag
 }

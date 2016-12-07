@@ -7,8 +7,8 @@
    use_message_filter="true">
    <to_mapper
       guid="HL7_Processor-To-gyfakpam9crunZ"
-      commit_id="4a86718ba0aa20a3fc508f78970fd192d3756775"
-      commit_comment="send to storage">
+      commit_id="5d57c9355d57bb56ce5bbcfd0ceff6718a2bd672"
+      commit_comment="trying to parse json string from queue">
       <dequeue_list>
          <dequeue
             source_name="self"
@@ -22,7 +22,7 @@
       poll_time="10000"
       max_message_size="15728640"
       source_dir="C:/Temp/Iguana/HL7/Incoming/"
-      source_file_extension=".hl7"
+      source_file_extension="hl7"
       archive_processed_files="true"
       processed_dir="C:/Temp/Iguana/HL7/Processed/"
       error_dir="C:/Temp/Iguana/HL7/Error/"
@@ -42,7 +42,7 @@
       error_handling="0"
       use_translator_filter="true"
       translator_guid="HL7_Processor-Filter-5k70CSNnE6etAJ"
-      translator_commit_id="85786cf6bff643722748eefa35d8b63866696f95"
-      translator_commit_comment="Refactorings, restructuring, addition of logic">
+      translator_commit_id="bb5a7e4a07d4424aaba5bb2a5b8324b114487b8a"
+      translator_commit_comment="bug correction">
    </message_filter>
 </channel>

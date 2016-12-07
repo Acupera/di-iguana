@@ -19,15 +19,14 @@ local function mapAddresses(hl7Message, patient)
    local address = combinedPatient.address()
    
    address.AddressLine1 = hl7Message.PID[11][1][1][1]:nodeValue()
+   --address.AddressLine2 = hl7Message.PID[11][1][1][1]:nodeValue() -- Address2 is not in demo.vmd
    address.City = hl7Message.PID[11][1][3]:nodeValue()
    address.State = hl7Message.PID[11][1][4]:nodeValue()
    address.Postal = hl7Message.PID[11][1][5]:nodeValue()
    address.LastVerifiedDate = dateparse.parse(hl7Message.EVN[2][1]:nodeValue())
    
    if address.AddressLine1 ~= '' or address.City ~= '' or address.State ~= '' or address.Postal ~= '' then
-      patient.Addresses[1] = address
-   else
-      patient.Addresses = nil
+      table.insert(patient.Addresses, address)
    end
    
    return
@@ -38,16 +37,34 @@ local function mapContacts(hl7Message, patient)
    
    -- ?? will this change per client ??
    contact.Value = hl7Message.PID[13][1][1]:nodeValue()
-   --contact.ContactMethodType = 'Home' -- how to map this to our ListItem values?
    contact.LastVerifiedDate = dateparse.parse(hl7Message.EVN[2][1]:nodeValue())
    
    if contact.Value ~= '' then
-      patient.Contacts[1] = contact
-   else
-      patient.Contacts = nil
+      table.insert(patient.Contacts, contact)
    end
    
    return
+end
+
+local function mapCoverages(hl7Message, patient)
+   local coverage = combinedPatient.coverage()
+   
+   coverage.StartDate = hl7Message.INSURANCE[1].IN1[12]:nodeValue()
+   coverage.EndDate = hl7Message.INSURANCE[1].IN1[13]:nodeValue()
+   coverage.LastCoverageValidationDateTime = dateparse.parse(hl7Message.EVN[2][1]:nodeValue())
+   coverage.IsPrimary = hl7Message.INSURANCE[1].IN1[22]:nodeValue() -- needs mapping/customization
+   coverage.RelationshipToSubscriber = hl7Message.INSURANCE[1].IN1[17][1]:nodeValue() -- needs mapping/customization
+   
+   if coverage.StartDate ~= '' or coverage.EndDate ~= '' or coverage.LastCoverageValidationDateTime ~= '' or coverage.IsPrimary ~= '' or coverage.RelationshipToSubscriber ~= '' then
+      table.insert(patient.Coverages, coverage)
+   end
+end
+
+local function mapIdentifiers(hl7Message, patient)
+   local identifier = combinedPatient.identifier()
+   
+   identifier.StartDate = dateparse.parse(hl7Message.EVN[2][1]:nodeValue())
+   table.insert(patient.Identifiers, identifier)
 end
 
 local function mapLanguages(hl7Message, patient)
@@ -56,9 +73,7 @@ local function mapLanguages(hl7Message, patient)
    language.Language = hl7Message.PID[15][1]:nodeValue()
    
    if language.Language ~= '' then
-      patient.Languages[1] = language -- how to map this to our ListItem values?
-   else
-      patient.Languages = nil
+      table.insert(patient.Languages, language) -- how to map this to our ListItem values?
    end
    
    return
@@ -69,6 +84,7 @@ local function mapPatientRecord(hl7Message, patient)
    patient.PatientRecord.LastName = hl7Message.PID[5][1][1][1]:nodeValue()
    patient.PatientRecord.MiddleName = hl7Message.PID[5][1][3]:nodeValue()
    patient.PatientRecord.DateOfBirth = dateparse.parse(hl7Message.PID[7][1]:nodeValue())
+   patient.PatientRecord.DateOfDeath = dateparse.parse(hl7Message.PID[29][1]:nodeValue())
    patient.PatientRecord.Gender = hl7Message.PID[8]:nodeValue() -- how to map this to our ListItem values?
    patient.PatientRecord.SSN = hl7Message.PID[19]:nodeValue()
    patient.PatientRecord.Race = hl7Message.PID[10][1][1]:nodeValue() -- how to map this to our lookups?
@@ -86,11 +102,14 @@ local function mapPatientRecord(hl7Message, patient)
 end
 
 local function mapPatientSearch(hl7Message, patient)
-   local identifier = combinedPatient.identifier()
+   local identifier = combinedPatient.identifierInfo()
+   local coverageSearchInfo = combinedPatient.coverageSearchInfo()
    
    identifier.AssigningAuthority = hl7Message.MSH[3][1]:nodeValue()
    identifier.IdentifierValue = hl7Message.PID[3][1][1]:nodeValue()
-   patient.PatientSearch.PatientIdentifiers[1] = identifier
+   table.insert(patient.PatientSearch.PatientIdentifiers, identifier)
+   coverageSearchInfo.HealthPlan = hl7Message.INSURANCE[1].IN1[4][1][1]:nodeValue()
+   table.insert(patient.PatientSearch.PatientCoverages, coverageSearchInfo)
    patient.PatientSearch.FirstName = hl7Message.PID[5][1][2]:nodeValue()
    patient.PatientSearch.LastName = hl7Message.PID[5][1][1][1]:nodeValue()
    patient.PatientSearch.MiddleName = hl7Message.PID[5][1][3]:nodeValue()
@@ -111,13 +130,15 @@ function mappers.mapADTA28(hl7Message)
    mapPatientRecord(hl7Message, patient)
    mapAddresses(hl7Message, patient)
    mapContacts(hl7Message, patient)
+   mapCoverages(hl7Message, patient)
+   mapIdentifiers(hl7Message, patient)
    mapLanguages(hl7Message, patient)
    
    return patient
 end
 
 function mappers.mapADTA31(hl7Message)
-   return mapADTA28(hl7Message)
+   return mappers.mapADTA28(hl7Message)
 end
 
 local function map(hl7Message)
