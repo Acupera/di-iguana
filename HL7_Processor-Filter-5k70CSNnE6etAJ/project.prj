@@ -8,9 +8,9 @@
         "date.parse"
     ],
     "OtherDependencies": [
-        "example/demo.vmd"
+        "example/acupera.vmd"
     ],
-    "timestamp": "1481146098",
+    "timestamp": "1481244064",
     "version_info": {
         "build": 0,
         "major": 6,

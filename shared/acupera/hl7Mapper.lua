@@ -35,11 +35,10 @@ end
 local function mapContacts(hl7Message, patient)
    local contact = combinedPatient.contact()
    
-   -- ?? will this change per client ??
    contact.Value = hl7Message.PID[13][1][1]:nodeValue()
    contact.LastVerifiedDate = dateparse.parse(hl7Message.EVN[2][1]:nodeValue())
    
-   if contact.Value ~= '' then
+   if hl7Message.PID[13][1][1]:nodeValue() ~= '' or hl7Message.PID[13][1][4]:nodeValue() ~= '' then
       table.insert(patient.Contacts, contact)
    end
    
@@ -49,13 +48,13 @@ end
 local function mapCoverages(hl7Message, patient)
    local coverage = combinedPatient.coverage()
    
-   coverage.StartDate = hl7Message.INSURANCE[1].IN1[12]:nodeValue()
-   coverage.EndDate = hl7Message.INSURANCE[1].IN1[13]:nodeValue()
+   coverage.StartDate = dateparse.parse(hl7Message.INSURANCE[1].IN1[12]:nodeValue())
+   coverage.EndDate = dateparse.parse(hl7Message.INSURANCE[1].IN1[13]:nodeValue())
    coverage.LastCoverageValidationDateTime = dateparse.parse(hl7Message.EVN[2][1]:nodeValue())
-   coverage.IsPrimary = hl7Message.INSURANCE[1].IN1[22]:nodeValue() -- needs mapping/customization
-   coverage.RelationshipToSubscriber = hl7Message.INSURANCE[1].IN1[17][1]:nodeValue() -- needs mapping/customization
+   coverage.IsPrimary = hl7Message.INSURANCE[1].IN1[22]:nodeValue() -- is this correct for base functionality or should it just be a custom thing?
+   coverage.RelationshipToSubscriber = hl7Message.INSURANCE[1].IN1[17][1]:nodeValue() -- is this correct for base functionality or should it just be a custom thing?
    
-   if coverage.StartDate ~= '' or coverage.EndDate ~= '' or coverage.LastCoverageValidationDateTime ~= '' or coverage.IsPrimary ~= '' or coverage.RelationshipToSubscriber ~= '' then
+   if coverage.StartDate ~= '' and coverage.RelationshipToSubscriber ~= '' then
       table.insert(patient.Coverages, coverage)
    end
 end
@@ -63,6 +62,7 @@ end
 local function mapIdentifiers(hl7Message, patient)
    local identifier = combinedPatient.identifier()
    
+   identifier.IdentifierValue = hl7Message.PID[3][1][1]:nodeValue()
    identifier.StartDate = dateparse.parse(hl7Message.EVN[2][1]:nodeValue())
    table.insert(patient.Identifiers, identifier)
 end
@@ -70,10 +70,10 @@ end
 local function mapLanguages(hl7Message, patient)
    local language = combinedPatient.language()
    
-   language.Language = hl7Message.PID[15][1]:nodeValue()
+   language.Language = hl7Message.PID[15][2]:nodeValue()
    
    if language.Language ~= '' then
-      table.insert(patient.Languages, language) -- how to map this to our ListItem values?
+      table.insert(patient.Languages, language)
    end
    
    return
@@ -85,11 +85,11 @@ local function mapPatientRecord(hl7Message, patient)
    patient.PatientRecord.MiddleName = hl7Message.PID[5][1][3]:nodeValue()
    patient.PatientRecord.DateOfBirth = dateparse.parse(hl7Message.PID[7][1]:nodeValue())
    patient.PatientRecord.DateOfDeath = dateparse.parse(hl7Message.PID[29][1]:nodeValue())
-   patient.PatientRecord.Gender = hl7Message.PID[8]:nodeValue() -- how to map this to our ListItem values?
+   patient.PatientRecord.Gender = hl7Message.PID[8]:nodeValue()
    patient.PatientRecord.SSN = hl7Message.PID[19]:nodeValue()
-   patient.PatientRecord.Race = hl7Message.PID[10][1][1]:nodeValue() -- how to map this to our lookups?
-   patient.PatientRecord.Ethnicity = hl7Message.PID[22][1][1]:nodeValue() -- how to map this to our lookups?
-   patient.PatientRecord.MaritalStatus = hl7Message.PID[16][1]:nodeValue() -- how to map this to our lookups?
+   patient.PatientRecord.Race = hl7Message.PID[10][1][2]:nodeValue()
+   patient.PatientRecord.Ethnicity = hl7Message.PID[22][1][2]:nodeValue()
+   patient.PatientRecord.MaritalStatus = hl7Message.PID[16][1]:nodeValue()
    patient.PatientRecord.Facility = hl7Message.MSH[4][1]:nodeValue()
    
    if patient.PatientRecord.FirstName == '' and patient.PatientRecord.LastName == '' and patient.PatientRecord.MiddleName == ''
@@ -105,7 +105,6 @@ local function mapPatientSearch(hl7Message, patient)
    local identifier = combinedPatient.identifierInfo()
    local coverageSearchInfo = combinedPatient.coverageSearchInfo()
    
-   identifier.AssigningAuthority = hl7Message.MSH[3][1]:nodeValue()
    identifier.IdentifierValue = hl7Message.PID[3][1][1]:nodeValue()
    table.insert(patient.PatientSearch.PatientIdentifiers, identifier)
    coverageSearchInfo.HealthPlan = hl7Message.INSURANCE[1].IN1[4][1][1]:nodeValue()
