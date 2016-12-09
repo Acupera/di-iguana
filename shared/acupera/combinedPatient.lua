@@ -86,7 +86,8 @@ local function identifier()
       IdentifierValue = '',
       IdentifierType = '',
       IdentifierName = '',
-      StartDate = ''
+      StartDate = '',
+      TimeZone = ''
    }
 end
 

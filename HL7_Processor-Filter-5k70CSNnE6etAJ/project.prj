@@ -6,12 +6,13 @@
         "acupera.combinedPatient",
         "acupera.hl7Mapper",
         "acupera.hl7MapperCustom",
-        "date.parse"
+        "date.parse",
+        "log.annotate"
     ],
     "OtherDependencies": [
         "example/acupera.vmd"
     ],
-    "timestamp": "1481247053",
+    "timestamp": "1481308064",
     "version_info": {
         "build": 0,
         "major": 6,

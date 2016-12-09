@@ -1,5 +1,6 @@
+require 'log.annotate'
 local azureStorageGateway = require "acupera.azureStorageGateway"
 
 function main(Data)
-   azureStorageGateway.queue.send(json.parse{data=Data})
+   azureStorageGateway.queue.send(Data)
 end

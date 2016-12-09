@@ -170,6 +170,7 @@ function mappers.mapAll(hl7Message, patient)
    
    for i, coverage in pairs(patient.Coverages) do
       coverage.RelationshipToSubscriber = lookupRelationshipDescription(hl7Message.INSURANCE[1].IN1[17][1]:nodeValue())
+      coverage.TimeZone = timeZone
       
       if hl7Message.INSURANCE[1].IN1[22]:nodeValue() == "1" then
          coverage.IsPrimary = "TRUE"
@@ -182,6 +183,7 @@ function mappers.mapAll(hl7Message, patient)
       identifier.IdentifierName = "Account Number"
       identifier.AssigningAuthority = assigningAuthority
       identifier.IdentifierType = identifierType
+      identifier.TimeZone = timeZone
    end
 end
 

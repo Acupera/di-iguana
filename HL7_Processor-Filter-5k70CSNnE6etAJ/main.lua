@@ -1,3 +1,4 @@
+require 'log.annotate'
 local mapper = require "acupera.hl7Mapper"
 
 function main(Data)
@@ -10,7 +11,7 @@ function main(Data)
       return
    end
    
-   queue.push{data = json.serialize{data=patient}}
+   queue.push{data = json.serialize{data=patient, alphasort=true}}
    
    return
 end

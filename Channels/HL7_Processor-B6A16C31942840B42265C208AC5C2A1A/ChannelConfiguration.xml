@@ -7,8 +7,8 @@
    use_message_filter="true">
    <to_mapper
       guid="HL7_Processor-To-gyfakpam9crunZ"
-      commit_id="5d57c9355d57bb56ce5bbcfd0ceff6718a2bd672"
-      commit_comment="trying to parse json string from queue">
+      commit_id="ff747424444f19410b58d159d03a9ff5077f3292"
+      commit_comment="Annotated logs.">
       <dequeue_list>
          <dequeue
             source_name="self"
@@ -42,7 +42,7 @@
       error_handling="0"
       use_translator_filter="true"
       translator_guid="HL7_Processor-Filter-5k70CSNnE6etAJ"
-      translator_commit_id="4613f53e7f495e95c74c1aab0b7d1406ecd58e81"
-      translator_commit_comment="Main flow update.">
+      translator_commit_id="b16f15bf892427ba885b15f20f5ca3cc7c912806"
+      translator_commit_comment="remove test">
    </message_filter>
 </channel>

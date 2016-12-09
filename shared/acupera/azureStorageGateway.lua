@@ -1,5 +1,5 @@
 local function send(combinedPatient)
-   local jsonMessage = json.serialize{data=combinedPatient,alphasort=true}
+   if type(combinedPatient) == table then combinedPatient = json.parse{data=combinedPatient} end
    -- TODO: save jsonMessage to Azure storage queue/service bus queue/topic
 end
 
