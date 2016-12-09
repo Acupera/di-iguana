@@ -2,6 +2,7 @@
     "LocalDependencies": [],
     "LuaDependencies": [
         "acupera.azureStorageGateway",
+        "acupera.clients.USMM.hl7Mapper",
         "acupera.combinedPatient",
         "acupera.hl7Mapper",
         "acupera.hl7MapperCustom",
@@ -10,7 +11,7 @@
     "OtherDependencies": [
         "example/acupera.vmd"
     ],
-    "timestamp": "1481244772",
+    "timestamp": "1481247053",
     "version_info": {
         "build": 0,
         "major": 6,
