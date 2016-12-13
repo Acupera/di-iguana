@@ -3,15 +3,17 @@ local mapper = require "acupera.hl7Mapper"
 
 function main(Data)
    local hl7Message, vmdConfigurationName = hl7.parse{vmd = 'example/acupera.vmd', data = Data}
-   local patient = mapper.map(hl7Message)
    
-   if patient == nil then
-      iguana.logError(hl7Message.MSH[9][1]:nodeValue() .. " " .. hl7Message.MSH[9][2]:nodeValue() .. " messages for .vmd configuration " .. vmdConfigurationName .. " are not supported by this channel.")
+   if not mapper.isSupported(hl7Message) then
+      iguana.logError(hl7Message.MSH[9][1]:nodeValue() .. " " .. hl7Message.MSH[9][2]:nodeValue() .. 
+         " messages using the "..vmdConfigurationName.." .vmd configuration are not supported by this channel,"..
+         " Sending Application: "..hl7Message.MSH[3][1]:nodeValue()..
+         ", Sending Facility: "..hl7Message.MSH[4][1]:nodeValue()..".")
       
       return
    end
    
-   queue.push{data = json.serialize{data=patient, alphasort=true}}
+   queue.push{data = json.serialize{data=mapper.map(hl7Message), alphasort=true}}
    
    return
 end

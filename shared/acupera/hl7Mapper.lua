@@ -2,20 +2,10 @@ local dateparse = require "date.parse"
 local combinedPatient = require "acupera.combinedPatient"
 local customMapper = require "acupera.hl7MapperCustom"
 
-local mappers = {}
+local entityMappers = {}
+local messageMappers = {}
 
-local function getMapperName(hl7Message)
-   local messageCode = hl7Message.MSH[9][1]:nodeValue()
-   local messageEvent = hl7Message.MSH[9][2]:nodeValue()
-   
-   return "map"..messageCode..messageEvent
-end
-
-local function isSupported(hl7Message)
-   return mappers[getMapperName(hl7Message)] ~= nil
-end
-
-local function mapAddresses(hl7Message, patient)
+function entityMappers.mapAddresses(hl7Message, patient)
    for i = 1, #hl7Message.PID[11] do
       local address = combinedPatient.address()
    
@@ -34,7 +24,7 @@ local function mapAddresses(hl7Message, patient)
    return
 end
 
-local function mapContacts(hl7Message, patient)
+function entityMappers.mapContacts(hl7Message, patient)
    for i = 1, #hl7Message.PID[13] do
       local contact = combinedPatient.contact()
       
@@ -56,7 +46,7 @@ local function mapContacts(hl7Message, patient)
    return
 end
 
-local function mapCoverages(hl7Message, patient)
+function entityMappers.mapCoverages(hl7Message, patient)
    for i = 1, #hl7Message.INSURANCE do
       local coverage = combinedPatient.coverage()
    
@@ -74,7 +64,7 @@ local function mapCoverages(hl7Message, patient)
    return
 end
 
-local function mapIdentifiers(hl7Message, patient)
+function entityMappers.mapIdentifiers(hl7Message, patient)
    for i = 1, #hl7Message.PID[3] do
       local identifier = combinedPatient.identifier()
       
@@ -86,7 +76,7 @@ local function mapIdentifiers(hl7Message, patient)
    return
 end
 
-local function mapLanguages(hl7Message, patient)
+function entityMappers.mapLanguages(hl7Message, patient)
    local language = combinedPatient.language()
    
    language.Language = hl7Message.PID[15][2]:nodeValue()
@@ -98,7 +88,7 @@ local function mapLanguages(hl7Message, patient)
    return
 end
 
-local function mapPatientRecord(hl7Message, patient)
+function entityMappers.mapPatientRecord(hl7Message, patient)
    patient.PatientRecord.FirstName = hl7Message.PID[5][1][2]:nodeValue()
    patient.PatientRecord.LastName = hl7Message.PID[5][1][1][1]:nodeValue()
    patient.PatientRecord.MiddleName = hl7Message.PID[5][1][3]:nodeValue()
@@ -114,7 +104,7 @@ local function mapPatientRecord(hl7Message, patient)
    return
 end
 
-local function mapPatientSearch(hl7Message, patient)
+function entityMappers.mapPatientSearch(hl7Message, patient)
    for i = 1, #hl7Message.PID[3] do
       local identifier = combinedPatient.identifierInfo()
       
@@ -141,28 +131,39 @@ local function mapPatientSearch(hl7Message, patient)
    return
 end
 
-function mappers.mapADTA28(hl7Message)
+function messageMappers.mapADTA28(hl7Message)
    local patient = combinedPatient.patient()
    
-   mapPatientSearch(hl7Message, patient)
-   mapPatientRecord(hl7Message, patient)
-   mapAddresses(hl7Message, patient)
-   mapContacts(hl7Message, patient)
-   mapCoverages(hl7Message, patient)
-   mapIdentifiers(hl7Message, patient)
-   mapLanguages(hl7Message, patient)
+   entityMappers.mapPatientSearch(hl7Message, patient)
+   entityMappers.mapPatientRecord(hl7Message, patient)
+   entityMappers.mapAddresses(hl7Message, patient)
+   entityMappers.mapContacts(hl7Message, patient)
+   entityMappers.mapCoverages(hl7Message, patient)
+   entityMappers.mapIdentifiers(hl7Message, patient)
+   entityMappers.mapLanguages(hl7Message, patient)
    
    return patient
 end
 
-function mappers.mapADTA31(hl7Message)
-   return mappers.mapADTA28(hl7Message)
+function messageMappers.mapADTA31(hl7Message)
+   return messageMappers.mapADTA28(hl7Message)
+end
+
+local function getMapperName(hl7Message)
+   local messageCode = hl7Message.MSH[9][1]:nodeValue()
+   local messageEvent = hl7Message.MSH[9][2]:nodeValue()
+   
+   return "map"..messageCode..messageEvent
+end
+
+local function isSupported(hl7Message)
+   return messageMappers[getMapperName(hl7Message)] ~= nil and customMapper.isSupported(hl7Message)
 end
 
 local function map(hl7Message)
    if not isSupported(hl7Message) then return nil end
    
-   local patient = mappers[getMapperName(hl7Message)](hl7Message)
+   local patient = messageMappers[getMapperName(hl7Message)](hl7Message)
    
    customMapper.map(hl7Message, patient)
    

@@ -42,7 +42,7 @@
       error_handling="0"
       use_translator_filter="true"
       translator_guid="HL7_Processor-Filter-5k70CSNnE6etAJ"
-      translator_commit_id="269ab09fb34614355c781d4ec1b09a84b4a14749"
-      translator_commit_comment="Refactored constants. Moved azure connection info to environment variables.">
+      translator_commit_id="84f6f028a5998d1862e3eae1aeebc79908d39203"
+      translator_commit_comment="Ignoring USMM ADTA28 messages as they will not contain the needed INSURANCE segment. Refactored hl7Mapper to contain entityMappers and messageMappers. Extended main logging.">
    </message_filter>
 </channel>
