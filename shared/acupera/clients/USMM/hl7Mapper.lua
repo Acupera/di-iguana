@@ -136,18 +136,20 @@ function mappers.mapAll(hl7Message, patient)
    local gender = lookupGender(hl7Message.PID[8]:nodeValue())
    local assigningAuthority = "Centricity"
    local identifierType = "MRN"
+   local identifierName = "Account Number"
    
    patient.PatientSearch.Gender = gender
    
    for i, identifier in pairs(patient.PatientSearch.PatientIdentifiers) do
       identifier.IdentifierType = identifierType
       identifier.AssigningAuthority = assigningAuthority
+      identifier.IdentifierName = identifierName
    end
    
    for i, coverage in pairs(patient.PatientSearch.PatientCoverages) do
       coverage.LineOfBusiness = "NONE"
       coverage.TimeZone = timeZone
-      coverage.Client = lookupClient(coverage.HealthPlan)
+      coverage.Client = lookupClient(hl7Message.INSURANCE[1].IN1[4][1][1]:nodeValue())
    end
    
    patient.PatientRecord.Race = lookupRace(hl7Message.PID[10][1][1]:nodeValue())
@@ -157,14 +159,13 @@ function mappers.mapAll(hl7Message, patient)
    patient.PatientRecord.Ethnicity = lookupEthnicity(hl7Message.PID[22][1][1]:nodeValue())
    
    for i, address in pairs(patient.Addresses) do
-      address.AddressType = "HOME"
-      patient.Addresses[1].IsPreferred = "TRUE"
       address.TimeZone = timeZone
+      
+      if i == 1 then address.IsPreferred = "TRUE" end
    end
    
    for i, contact in pairs(patient.Contacts) do
       contact.ContactMethodType = "HOME"
-      contact.Value = hl7Message.PID[13][1][1]:nodeValue()
       contact.TimeZone = timeZone
    end
    
@@ -180,7 +181,7 @@ function mappers.mapAll(hl7Message, patient)
    end
    
    for i, identifier in pairs(patient.Identifiers) do
-      identifier.IdentifierName = "Account Number"
+      identifier.IdentifierName = identifierName
       identifier.AssigningAuthority = assigningAuthority
       identifier.IdentifierType = identifierType
       identifier.TimeZone = timeZone
