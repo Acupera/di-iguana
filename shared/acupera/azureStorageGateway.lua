@@ -1,5 +1,7 @@
 require 'log.annotate'
 
+local retry = require "retry"
+
 local azureConstants = {
    azureDateFormat = "%a, %d %b %Y %H:%M:%S GMT",
    azureAPIVersion = "2015-12-11",
@@ -9,6 +11,10 @@ local azureConstants = {
    },
    queues = {
       combinedPatient = "dataintegration-combinedpatient"
+   },
+   retryDefaults = {
+      times = 5,
+      pause = 10
    }
 }
 
@@ -35,24 +41,45 @@ local function getSignature(httpVerb, time, message)
    return filter.base64.enc(crypto.hmac{data=signature, key=key, algorithm=crypto.algorithms()[11]})
 end
 
+local function retryRestErrorHandler(success, errMsgOrReturnCode, response)
+   if not success then error(errMsgOrReturnCode) end
+   
+   local isSuccessful = true
+   
+   if response.code == 500 or response.code == 503 then
+      iguana.logWarning("Retrying for response code: "..response.code)
+	   isSuccessful = false
+   elseif not response.successCodes[response.code] then
+      iguana.logError("Azure REST API respone code:"..response.code..", data: "..response.data..".")
+   end
+   
+   return isSuccessful
+end
+
 local function put(combinedPatient)
    if type(combinedPatient) == table then combinedPatient = json.parse{data=combinedPatient} end
    
    local time = os.ts.gmdate(azureConstants.azureDateFormat)
    local contents = combinedPatient:gsub('\r', ''):compactWS()
    local message = '<QueueMessage><MessageText>'..filter.base64.enc(contents)..'</MessageText></QueueMessage>'
-   local result = net.http.post{
-      method="POST",
-      url="https://"..os.getenv("azureStorageAccount.name")..".queue.core.windows.net/"..azureConstants.queues.combinedPatient.."/messages",
-      headers={
-         Authorization = "SharedKey "..os.getenv("azureStorageAccount.name")..":".. getSignature("POST", time, message),
-         [azureConstants.headers.date] = time,
-         [azureConstants.headers.version] = azureConstants.azureAPIVersion
-      },
-      body=message
-      --,debug=true
-      --,live=true
-   }
+   local restCall = function()
+      local result, httpStatus, headers = net.http.post{
+         method="POST",
+         url="https://"..os.getenv("azureStorageAccount.name")..".queue.core.windows.net/"..azureConstants.queues.combinedPatient.."/messages",
+         headers={
+            Authorization = "SharedKey "..os.getenv("azureStorageAccount.name")..":".. getSignature("POST", time, message),
+            [azureConstants.headers.date] = time,
+            [azureConstants.headers.version] = azureConstants.azureAPIVersion
+         },
+         body=message
+         ,debug=true
+         ,live=true
+      }
+      
+      return true, { data = result, code = httpStatus, headers = headers, successCodes = { [201]=true } }
+   end
+   
+   return retry.call{func=restCall, retry=azureConstants.retryDefaults.times, pause=azureConstants.retryDefaults.pause, errorfunc=retryRestErrorHandler}
 end
 
 return {

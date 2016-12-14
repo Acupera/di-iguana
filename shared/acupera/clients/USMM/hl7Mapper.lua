@@ -138,7 +138,7 @@ function mappers.mapAll(hl7Message, patient)
    local identifierType = "MRN"
    local identifierName = "Account Number"
    
-   patient.PatientSearch.Gender = gender
+   patient.PatientSearch.GenderString = gender
    
    for i, identifier in pairs(patient.PatientSearch.PatientIdentifiers) do
       identifier.IdentifierType = identifierType
@@ -154,7 +154,7 @@ function mappers.mapAll(hl7Message, patient)
    
    patient.PatientRecord.Race = lookupRace(hl7Message.PID[10][1][1]:nodeValue())
    patient.PatientRecord.TimeZone = timeZone
-   patient.PatientRecord.Gender = gender
+   patient.PatientRecord.GenderString = gender
    patient.PatientRecord.MaritalStatus = lookupMaritalStatus(hl7Message.PID[16][1]:nodeValue())
    patient.PatientRecord.Ethnicity = lookupEthnicity(hl7Message.PID[22][1][1]:nodeValue())
    
