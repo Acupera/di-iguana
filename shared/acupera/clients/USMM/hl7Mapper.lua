@@ -188,7 +188,7 @@ function mappers.mapAll(hl7Message, patient)
    end
 end
 
-function mappers.mapADTA31(hl7Message, patient)
+function mappers.mapADTA28(hl7Message, patient)
    if hl7Message.PV1[8][1][1]:nodeValue() == "ETOC" then
       local tag = combinedPatient.tag()
 
@@ -198,6 +198,12 @@ function mappers.mapADTA31(hl7Message, patient)
       table.insert(patient.Tags, tag)
    end
    mappers.mapAll(hl7Message, patient)
+   
+   return
+end
+
+function mappers.mapADTA31(hl7Message, patient)
+   mappers.mapADTA28(hl7Message, patient)
    
    return
 end

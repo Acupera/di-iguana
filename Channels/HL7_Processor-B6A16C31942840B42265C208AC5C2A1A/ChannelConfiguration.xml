@@ -7,8 +7,8 @@
    use_message_filter="true">
    <to_mapper
       guid="HL7_Processor-To-gyfakpam9crunZ"
-      commit_id="c85547b868af01536073c5fad2c1ebb3af8350be"
-      commit_comment="Corrected success code testing.">
+      commit_id="dd79de34b4c9637265ab3e845b6d6bf17d802e68"
+      commit_comment="Updated message payload to store more data than just the combinedPatient.">
       <dequeue_list>
          <dequeue
             source_name="self"
@@ -42,7 +42,7 @@
       error_handling="0"
       use_translator_filter="true"
       translator_guid="HL7_Processor-Filter-5k70CSNnE6etAJ"
-      translator_commit_id="c85547b868af01536073c5fad2c1ebb3af8350be"
-      translator_commit_comment="Corrected success code testing.">
+      translator_commit_id="dd79de34b4c9637265ab3e845b6d6bf17d802e68"
+      translator_commit_comment="Updated message payload to store more data than just the combinedPatient.">
    </message_filter>
 </channel>

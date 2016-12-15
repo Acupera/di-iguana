@@ -18,11 +18,18 @@ local azureConstants = {
    }
 }
 
+local function getCanonicalizedResource()
+   if os.getenv("azureStorageAccount.url"):match("127.0.0.1") ~= nil or os.getenv("azureStorageAccount.url"):match("localhost") ~= nil then
+      return "/"..os.getenv("azureStorageAccount.name").."/"..os.getenv("azureStorageAccount.name").."/"..azureConstants.queues.combinedPatient.."/messages"
+   end
+   
+   return "/"..os.getenv("azureStorageAccount.name").."/"..azureConstants.queues.combinedPatient.."/messages"
+end
+
 local function getSignature(httpVerb, time, message)
    local key = filter.base64.dec(os.getenv("azureStorageAccount.primaryAccessKey"))
    local canonicalizedHeaders = azureConstants.headers.date..":".. time ..
       "\n"..azureConstants.headers.version..":"..azureConstants.azureAPIVersion.."\n"
-   local canonicalizedResource = "/"..os.getenv("azureStorageAccount.name").."/"..azureConstants.queues.combinedPatient.."/messages"
    local signature = httpVerb .. "\n" ..
       "\n" ..  --Content-Encoding
       "\n" ..  --Content-Language
@@ -36,7 +43,7 @@ local function getSignature(httpVerb, time, message)
       "\n" ..  --If-Unmodified-Since
       "\n" ..  --Range
       canonicalizedHeaders ..   
-      canonicalizedResource
+      getCanonicalizedResource()
    
    return filter.base64.enc(crypto.hmac{data=signature, key=key, algorithm=crypto.algorithms()[11]})
 end
@@ -60,12 +67,13 @@ local function put(combinedPatient)
    if type(combinedPatient) == table then combinedPatient = json.parse{data=combinedPatient} end
    
    local time = os.ts.gmdate(azureConstants.azureDateFormat)
-   local contents = combinedPatient:gsub('\r', ''):compactWS()
-   local message = '<QueueMessage><MessageText>'..filter.base64.enc(contents)..'</MessageText></QueueMessage>'
+   local payload = '{ "iguanaMessageId":"'..iguana.messageId()..'", "combinedPatient:'..combinedPatient..'}'
+   local message = '<QueueMessage><MessageText>'..filter.base64.enc(((payload):gsub('\r', ''):compactWS()))..'</MessageText></QueueMessage>'
+   
    local restCall = function()
       local result, httpStatus, headers = net.http.post{
          method="POST",
-         url="https://"..os.getenv("azureStorageAccount.name")..".queue.core.windows.net/"..azureConstants.queues.combinedPatient.."/messages",
+         url=os.getenv("azureStorageAccount.url")..azureConstants.queues.combinedPatient.."/messages",
          headers={
             Authorization = "SharedKey "..os.getenv("azureStorageAccount.name")..":".. getSignature("POST", time, message),
             [azureConstants.headers.date] = time,
