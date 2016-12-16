@@ -5,9 +5,14 @@ local retry = require "retry"
 local azureConstants = {
    azureDateFormat = "%a, %d %b %Y %H:%M:%S GMT",
    azureAPIVersion = "2015-12-11",
+   storageEmulatorAccountName = "devstoreaccount1",
    headers = {
       date = "x-ms-date",
-      version = "x-ms-version"
+      version = "x-ms-version",
+      blobType = "x-ms-blob-type"
+   },
+   blobs = {
+      combinedPatient = "dataintegration-combinedpatient"
    },
    queues = {
       combinedPatient = "dataintegration-combinedpatient"
@@ -18,18 +23,34 @@ local azureConstants = {
    }
 }
 
-local function getCanonicalizedResource()
-   if os.getenv("azureStorageAccount.url"):match("127.0.0.1") ~= nil or os.getenv("azureStorageAccount.url"):match("localhost") ~= nil then
-      return "/"..os.getenv("azureStorageAccount.name").."/"..os.getenv("azureStorageAccount.name").."/"..azureConstants.queues.combinedPatient.."/messages"
-   end
-   
-   return "/"..os.getenv("azureStorageAccount.name").."/"..azureConstants.queues.combinedPatient.."/messages"
-end
-
-local function getSignature(httpVerb, time, message)
+local function getAuthorizationHeader(httpVerb, time, message, uriPath, headers)
    local key = filter.base64.dec(os.getenv("azureStorageAccount.primaryAccessKey"))
-   local canonicalizedHeaders = azureConstants.headers.date..":".. time ..
-      "\n"..azureConstants.headers.version..":"..azureConstants.azureAPIVersion.."\n"
+   local canonicalizedHeaders = function()
+      local baseHeaders = {
+         azureConstants.headers.date..":".. time,
+         azureConstants.headers.version..":"..azureConstants.azureAPIVersion
+      }
+      
+      if headers ~= nil then
+         for i, header in pairs(headers) do
+            table.insert(baseHeaders, header)
+         end
+      end
+      
+      table.sort(baseHeaders)
+      
+      return table.concat(baseHeaders, '\n').."\n"
+
+   end
+   local canonicalizedResource = function()
+      local storageAccountName = os.getenv("azureStorageAccount.name")
+      
+      if storageAccountName == azureConstants.storageEmulatorAccountName then
+         return "/"..storageAccountName.."/"..storageAccountName.."/"..uriPath
+      else
+         return "/"..storageAccountName.."/"..uriPath
+      end
+   end
    local signature = httpVerb .. "\n" ..
       "\n" ..  --Content-Encoding
       "\n" ..  --Content-Language
@@ -42,10 +63,10 @@ local function getSignature(httpVerb, time, message)
       "\n" ..  --If-None-Match
       "\n" ..  --If-Unmodified-Since
       "\n" ..  --Range
-      canonicalizedHeaders ..   
-      getCanonicalizedResource()
+      canonicalizedHeaders() ..
+      canonicalizedResource()
    
-   return filter.base64.enc(crypto.hmac{data=signature, key=key, algorithm=crypto.algorithms()[11]})
+   return "SharedKey "..os.getenv("azureStorageAccount.name")..":"..filter.base64.enc(crypto.hmac{data=signature, key=key, algorithm=crypto.algorithms()[11]})
 end
 
 local function retryRestErrorHandler(success, errMsgOrReturnCode, response)
@@ -63,24 +84,22 @@ local function retryRestErrorHandler(success, errMsgOrReturnCode, response)
    return isSuccessful
 end
 
-local function put(combinedPatient)
-   if type(combinedPatient) == table then combinedPatient = json.parse{data=combinedPatient} end
-   
-   local time = os.ts.gmdate(azureConstants.azureDateFormat)
-   local payload = '{ "iguanaMessageId":"'..iguana.messageId()..'", "combinedPatient:'..combinedPatient..'}'
-   local message = '<QueueMessage><MessageText>'..filter.base64.enc(((payload):gsub('\r', ''):compactWS()))..'</MessageText></QueueMessage>'
-   
+local function blobPut(blobName, data)
    local restCall = function()
+      local time = os.ts.gmdate(azureConstants.azureDateFormat)
+      local message = data:gsub('\r', ''):compactWS()
       local result, httpStatus, headers = net.http.post{
-         method="POST",
-         url=os.getenv("azureStorageAccount.url")..azureConstants.queues.combinedPatient.."/messages",
+         method="PUT",
+         url=os.getenv("azureStorageAccount.blob.url")..blobName.."/"..iguana.messageId(),
          headers={
-            Authorization = "SharedKey "..os.getenv("azureStorageAccount.name")..":".. getSignature("POST", time, message),
+            Authorization = getAuthorizationHeader("PUT", time, message, blobName.."/"..iguana.messageId(), { "x-ms-blob-type:BlockBlob" }),
             [azureConstants.headers.date] = time,
-            [azureConstants.headers.version] = azureConstants.azureAPIVersion
+            [azureConstants.headers.version] = azureConstants.azureAPIVersion,
+            ["Content-Length"] = string.len(message),
+            [azureConstants.headers.blobType] = "BlockBlob"
          },
          body=message
-         ,debug=true
+         ,debug=iguana.isTest()
          ,live=true
       }
       
@@ -90,8 +109,40 @@ local function put(combinedPatient)
    return retry.call{func=restCall, retry=azureConstants.retryDefaults.times, pause=azureConstants.retryDefaults.pause, errorfunc=retryRestErrorHandler}
 end
 
+local function queuePut(queueName, data)
+   if type(data) == table then data = json.parse{data=data} end
+   
+   local restCall = function()
+      local time = os.ts.gmdate(azureConstants.azureDateFormat)
+      local payload = '{ "body": "77u/'..filter.base64.enc('{ "blobName": "'..iguana.messageId()..'" }')..'" }'
+      local message = '<QueueMessage><MessageText>'..filter.base64.enc(payload)..'</MessageText></QueueMessage>'
+      local result, httpStatus, headers = net.http.post{
+         method="POST",
+         url=os.getenv("azureStorageAccount.queue.url")..queueName.."/messages",
+         headers={
+            Authorization = getAuthorizationHeader("POST", time, message, queueName.."/messages"),
+            [azureConstants.headers.date] = time,
+            [azureConstants.headers.version] = azureConstants.azureAPIVersion
+         },
+         body=message
+         ,debug=iguana.isTest()
+         ,live=true
+      }
+      
+      return true, { data = result, code = httpStatus, headers = headers, successCodes = { [201]=true } }
+   end
+   
+   blobPut(azureConstants.blobs.combinedPatient, data)
+   
+   return retry.call{func=restCall, retry=azureConstants.retryDefaults.times, pause=azureConstants.retryDefaults.pause, errorfunc=retryRestErrorHandler}
+end
+
 return {
+   azureConstants = azureConstants,
+   blob = {
+      put = blobPut
+   },
    queue = {
-      put = put
+      put = queuePut
    }
 }

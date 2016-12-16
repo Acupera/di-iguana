@@ -48,16 +48,16 @@ end
 function lookupRace(raceCode)
 	local codeToDescriptionMappings = {
       ["0"] = "Unknown",
-	   ["1"] = "Black or African",
+	   ["1"] = "Black",
       ["2"] = "Asian",
       ["3"] = "White",
       ["4"] = "Asian",
-      ["5"] = "Native Hawaiian or Other Pacific Islander",
+      ["5"] = "NativeHawaiian",
       ["6"] = "Hispanic",
       ["7"] = "Asian",
-      ["8"] = "American Indian or Alaskan Native",
-      ["9"] = "Native Hawaiian or Other Pacific Islander",
-      ["10"] = "Native Hawaiian or Other Pacific Islander",
+      ["8"] = "AmericanIndian",
+      ["9"] = "NativeHawaiian",
+      ["10"] = "NativeHawaiian",
       ["11"] = "Other"
    }
    
