@@ -7,8 +7,8 @@
    use_message_filter="true">
    <to_mapper
       guid="HL7_Processor-To-gyfakpam9crunZ"
-      commit_id="f3b2a84c08cd3aa7e687d088686e61699fc6fee8"
-      commit_comment="Refactored to get full Auth header.">
+      commit_id="f220e5ebbe8524fabe4ac212b502939924856073"
+      commit_comment="Updated NServiceBus message property names.">
       <dequeue_list>
          <dequeue
             source_name="self"
@@ -42,7 +42,7 @@
       error_handling="0"
       use_translator_filter="true"
       translator_guid="HL7_Processor-Filter-5k70CSNnE6etAJ"
-      translator_commit_id="6418b2e470d68863e27285a7512787ef1243f673"
-      translator_commit_comment="Updated race mapping to be the textual value of the .net RaceLookup enum instead of the display name.">
+      translator_commit_id="86cdd803be19b919082cbf18ced317ed85b2679d"
+      translator_commit_comment="Removed json property sorting b/c it breaks proper json serialization replacing [] with {}. Updated USMM custom ethnicity mapping to be .NET enum names instead of display name.">
    </message_filter>
 </channel>

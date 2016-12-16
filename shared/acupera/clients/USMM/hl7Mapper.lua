@@ -100,9 +100,9 @@ end
 
 function lookupEthnicity(ethnicityCode)
 	local codeToDescriptionMappings = {
-      ["H"] = "Hispanic/Latino",
-	   ["N"] = "Not Hispanic or Latino",
-      ["U"] = "Decline to answer"
+      ["H"] = "HispanicLatino",
+	   ["N"] = "NotHispanicLatino",
+      ["U"] = "Declined"
    }
    
    if codeToDescriptionMappings[ethnicityCode] ~= nil then

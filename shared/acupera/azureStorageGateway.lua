@@ -114,8 +114,28 @@ local function queuePut(queueName, data)
    
    local restCall = function()
       local time = os.ts.gmdate(azureConstants.azureDateFormat)
-      local payload = '{ "body": "77u/'..filter.base64.enc('{ "blobName": "'..iguana.messageId()..'" }')..'" }'
-      local message = '<QueueMessage><MessageText>'..filter.base64.enc(payload)..'</MessageText></QueueMessage>'
+      local payloadBody = { blobName = iguana.messageId() }
+      local payload = {
+         Headers = {
+            ["NServiceBus.MessageId"] = "38fc10c3-aa7b-4737-9702-a6de00904155",
+            ["NServiceBus.CorrelationId"] = "38fc10c3-aa7b-4737-9702-a6de00904155",
+            ["NServiceBus.MessageIntent"] = "Send",
+            ["NServiceBus.Version"] = "5.2.14",
+            ["NServiceBus.TimeSent"] = time,--"2016-12-16 13:45:13:028580 Z",
+            ["NServiceBus.ContentType"] = "application/json",
+            ["NServiceBus.EnclosedMessageTypes"] = "DataIntegration.Messages.CombinedPatientCommand, DataIntegration.Messages, Version=1.0.0.0, "..
+               "Culture=neutral, PublicKeyToken=null;DataIntegration.Messages.IDataIntegrationCommand, DataIntegration.Messages, Version=1.0.0.0, "..
+               "Culture=neutral, PublicKeyToken=null;DataIntegration.Messages.IDataIntegrationRunCommand, DataIntegration.Messages, Version=1.0.0.0, "..
+               "Culture=neutral, PublicKeyToken=null;DataIntegration.Messages.DataIntegrationCommand, DataIntegration.Messages, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
+            ["NServiceBus.ConversationId"] = "264804b5-60e6-4957-84e7-a6de00904178",
+            ["WinIdName"] = iguana.id(),
+            ["NServiceBus.OriginatingMachine"] = "KASTURI-LAPTOP",
+            ["NServiceBus.OriginatingEndpoint"] = "DataIntegrationConsole",
+            ["$.diagnostics.originating.hostid"] = "cc27376f935b88a46e56a6ae9e905324"
+         },
+         Body = "77u/"..filter.base64.enc(json.serialize{data=payloadBody})
+      }
+      local message = '<QueueMessage><MessageText>'..filter.base64.enc(json.serialize{data=payload})..'</MessageText></QueueMessage>'
       local result, httpStatus, headers = net.http.post{
          method="POST",
          url=os.getenv("azureStorageAccount.queue.url")..queueName.."/messages",
