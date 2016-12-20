@@ -1,6 +1,7 @@
 local combinedPatient = require "acupera.combinedPatient"
 
 local customMappings = {
+   Acupera = require "acupera.clients.Acupera.hl7Mapper",
    USMM = require "acupera.clients.USMM.hl7Mapper"
 }
 

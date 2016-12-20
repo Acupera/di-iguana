@@ -1,6 +1,7 @@
 {
     "LocalDependencies": [],
     "LuaDependencies": [
+        "acupera.clients.Acupera.hl7Mapper",
         "acupera.clients.USMM.hl7Mapper",
         "acupera.combinedPatient",
         "acupera.hl7Mapper",
@@ -11,7 +12,7 @@
     "OtherDependencies": [
         "example/acupera.vmd"
     ],
-    "timestamp": "1482196518",
+    "timestamp": "1482269424",
     "version_info": {
         "build": 0,
         "major": 6,

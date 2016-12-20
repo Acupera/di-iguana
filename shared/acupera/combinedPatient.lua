@@ -11,9 +11,6 @@ local function patient()
          MiddleName = '',
          DateOfBirth = '',
          GenderString = '',
-         Client = '',
-         HealthPlan = '',
-         SubscriberId = '',
          SocialSecurityNumber = '',
       },
 	   PatientRecord = {
@@ -44,7 +41,7 @@ end
 local function address()
    return {
       AddressType = '',
-      AddressLine1 = '',
+      Address1 = '',
       Address2 = '',
       City = '',
       State = '',
@@ -79,7 +76,8 @@ local function coverageSearchInfo()
    return {
       Client = '',
       HealthPlan = '',
-      LineOfBusiness = ''
+      LineOfBusiness = '',
+      SubscriberId = ''
    }
 end
 

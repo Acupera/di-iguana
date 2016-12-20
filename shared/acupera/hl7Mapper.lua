@@ -9,12 +9,13 @@ function entityMappers.mapAddresses(hl7Message, patient)
    for i = 1, #hl7Message.PID[11] do
       local address = combinedPatient.address()
    
-      address.AddressLine1 = hl7Message.PID[11][i][1][1]:nodeValue()
-      address.AddressLine2 = hl7Message.PID[11][i][2]:nodeValue()
+      address.Address1 = hl7Message.PID[11][i][1][1]:nodeValue()
+      address.Address2 = hl7Message.PID[11][i][2]:nodeValue()
       address.City = hl7Message.PID[11][i][3]:nodeValue()
       address.State = hl7Message.PID[11][i][4]:nodeValue()
       address.Postal = hl7Message.PID[11][i][5]:nodeValue()
       address.LastVerifiedDate = dateparse.parse(hl7Message.EVN[2][1]:nodeValue())
+      address.IsPreferred = false
 
       if address.AddressLine1 ~= '' or address.City ~= '' or address.State ~= '' or address.Postal ~= '' then
          table.insert(patient.Addresses, address)
@@ -53,10 +54,8 @@ function entityMappers.mapCoverages(hl7Message, patient)
       coverage.StartDate = dateparse.parse(hl7Message.INSURANCE[i].IN1[12]:nodeValue())
       coverage.EndDate = dateparse.parse(hl7Message.INSURANCE[i].IN1[13]:nodeValue())
       coverage.LastCoverageValidationDateTime = dateparse.parse(hl7Message.EVN[2][1]:nodeValue())
-      coverage.IsPrimary = hl7Message.INSURANCE[i].IN1[22]:nodeValue() -- is this correct for base functionality or should it just be a custom thing?
-      coverage.RelationshipToSubscriber = hl7Message.INSURANCE[i].IN1[17][1]:nodeValue() -- is this correct for base functionality or should it just be a custom thing?
-
-      if coverage.StartDate ~= '' and coverage.RelationshipToSubscriber ~= '' then
+      
+      if coverage.StartDate ~= '' then
          table.insert(patient.Coverages, coverage)
       end
    end
@@ -96,9 +95,6 @@ function entityMappers.mapPatientRecord(hl7Message, patient)
    patient.PatientRecord.DateOfDeath = dateparse.parse(hl7Message.PID[29][1]:nodeValue())
    patient.PatientRecord.GenderString = hl7Message.PID[8]:nodeValue()
    patient.PatientRecord.SSN = hl7Message.PID[19]:nodeValue()
-   patient.PatientRecord.Race = hl7Message.PID[10][1][2]:nodeValue()
-   patient.PatientRecord.Ethnicity = hl7Message.PID[22][1][2]:nodeValue()
-   patient.PatientRecord.MaritalStatus = hl7Message.PID[16][1]:nodeValue()
    patient.PatientRecord.Facility = hl7Message.MSH[4][1]:nodeValue()
    
    return
@@ -116,6 +112,7 @@ function entityMappers.mapPatientSearch(hl7Message, patient)
       local coverageSearchInfo = combinedPatient.coverageSearchInfo()
       
       coverageSearchInfo.HealthPlan = hl7Message.INSURANCE[i].IN1[4][1][1]:nodeValue()
+      coverageSearchInfo.SubscriberId = hl7Message.INSURANCE[i].IN1[36]:nodeValue()
       table.insert(patient.PatientSearch.PatientCoverages, coverageSearchInfo)
    end
    
@@ -124,8 +121,6 @@ function entityMappers.mapPatientSearch(hl7Message, patient)
    patient.PatientSearch.MiddleName = hl7Message.PID[5][1][3]:nodeValue()
    patient.PatientSearch.DateOfBirth = dateparse.parse(hl7Message.PID[7][1]:nodeValue())
    patient.PatientSearch.GenderString = hl7Message.PID[8]:nodeValue()
-   patient.PatientSearch.HealthPlan = hl7Message.INSURANCE[1].IN1[4][1][1]:nodeValue()
-   patient.PatientSearch.SubscriberId = hl7Message.INSURANCE[1].IN1[36]:nodeValue()
    patient.PatientSearch.SocialSecurityNumber = hl7Message.PID[19]:nodeValue()
    
    return
