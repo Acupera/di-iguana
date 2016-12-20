@@ -75,24 +75,24 @@ local function retryRestErrorHandler(success, errMsgOrReturnCode, response)
    local isSuccessful = true
    
    if response.code == 500 or response.code == 503 then
-      iguana.logWarning("Retrying for response code: "..response.code)
+      iguana.logWarning("Retrying for response code: "..response.code, iguana.messageId())
 	   isSuccessful = false
    elseif not response.successCodes[response.code] then
-      iguana.logError("Azure REST API respone code:"..response.code..", data: "..response.data..".")
+      iguana.logError("Azure REST API respone code:"..response.code..", data: "..response.data..".", iguana.messageId())
    end
    
    return isSuccessful
 end
 
-local function blobPut(blobName, data)
+local function blobPut(blobContainer, data)
    local restCall = function()
       local time = os.ts.gmdate(azureConstants.azureDateFormat)
-      local message = data:gsub('\r', ''):compactWS()
+      local message = json.serialize{data=data}:gsub('\r', ''):compactWS()
       local result, httpStatus, headers = net.http.post{
          method="PUT",
-         url=os.getenv("azureStorageAccount.blob.url")..blobName.."/"..iguana.messageId(),
+         url=os.getenv("azureStorageAccount.blob.url")..blobContainer.."/"..data.Metadata.SourceId,
          headers={
-            Authorization = getAuthorizationHeader("PUT", time, message, blobName.."/"..iguana.messageId(), { "x-ms-blob-type:BlockBlob" }),
+            Authorization = getAuthorizationHeader("PUT", time, message, blobContainer.."/"..data.Metadata.SourceId, { "x-ms-blob-type:BlockBlob" }),
             [azureConstants.headers.date] = time,
             [azureConstants.headers.version] = azureConstants.azureAPIVersion,
             ["Content-Length"] = string.len(message),
@@ -110,18 +110,15 @@ local function blobPut(blobName, data)
 end
 
 local function queuePut(queueName, data)
-   if type(data) == table then data = json.parse{data=data} end
-   
    local restCall = function()
       local time = os.ts.gmdate(azureConstants.azureDateFormat)
-      local payloadBody = { blobName = iguana.messageId() }
+      local payloadBody = { blobName = data.Metadata.SourceId }
       local payload = {
          Headers = {
-            ["NServiceBus.MessageId"] = "38fc10c3-aa7b-4737-9702-a6de00904155",
+            ["NServiceBus.MessageId"] = util.guid(128),
             ["NServiceBus.CorrelationId"] = "38fc10c3-aa7b-4737-9702-a6de00904155",
             ["NServiceBus.MessageIntent"] = "Send",
             ["NServiceBus.Version"] = "5.2.14",
-            ["NServiceBus.TimeSent"] = time,--"2016-12-16 13:45:13:028580 Z",
             ["NServiceBus.ContentType"] = "application/json",
             ["NServiceBus.EnclosedMessageTypes"] = "DataIntegration.Messages.CombinedPatientCommand, DataIntegration.Messages, Version=1.0.0.0, "..
                "Culture=neutral, PublicKeyToken=null;DataIntegration.Messages.IDataIntegrationCommand, DataIntegration.Messages, Version=1.0.0.0, "..
@@ -133,6 +130,7 @@ local function queuePut(queueName, data)
             ["NServiceBus.OriginatingEndpoint"] = "DataIntegrationConsole",
             ["$.diagnostics.originating.hostid"] = "cc27376f935b88a46e56a6ae9e905324"
          },
+         ReplyToAddress = iguana.id().."@test",
          Body = "77u/"..filter.base64.enc(json.serialize{data=payloadBody})
       }
       local message = '<QueueMessage><MessageText>'..filter.base64.enc(json.serialize{data=payload})..'</MessageText></QueueMessage>'

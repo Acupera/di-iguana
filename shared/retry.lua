@@ -78,7 +78,7 @@ function retry.call(P)--F, A, RetryCount, Delay)
          end
          if (i > 1) then
             iguana.setChannelStatus{color='green', text=RECOVERED_MESSAGE..Fname..'()'}
-            iguana.logInfo(RECOVERED_MESSAGE..Fname..'()')
+            iguana.logInfo(RECOVERED_MESSAGE..Fname..'()', iguana.messageId())
          end
          -- add Info message as the last of (potentially) multiple returns
          R[#R+1] = Info
@@ -95,7 +95,7 @@ function retry.call(P)--F, A, RetryCount, Delay)
             iguana.setChannelStatus{color='yellow',
                text=E}
             sleep(Delay)
-            iguana.logInfo(E)
+            iguana.logInfo(E, iguana.messageId())
          end 
       end
    end

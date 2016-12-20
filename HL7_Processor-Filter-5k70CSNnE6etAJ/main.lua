@@ -8,7 +8,7 @@ function main(Data)
       iguana.logError(hl7Message.MSH[9][1]:nodeValue() .. " " .. hl7Message.MSH[9][2]:nodeValue() .. 
          " messages using the "..vmdConfigurationName.." .vmd configuration are not supported by this channel,"..
          " Sending Application: "..hl7Message.MSH[3][1]:nodeValue()..
-         ", Sending Facility: "..hl7Message.MSH[4][1]:nodeValue()..".")
+         ", Sending Facility: "..hl7Message.MSH[4][1]:nodeValue()..".", iguana.messageId())
       
       return
    end

@@ -134,6 +134,7 @@ end
 function messageMappers.mapADTA28(hl7Message)
    local patient = combinedPatient.patient()
    
+   patient.Metadata.SourceId = hl7Message.MSH[10]
    entityMappers.mapPatientSearch(hl7Message, patient)
    entityMappers.mapPatientRecord(hl7Message, patient)
    entityMappers.mapAddresses(hl7Message, patient)

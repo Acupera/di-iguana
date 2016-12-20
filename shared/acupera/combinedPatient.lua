@@ -1,5 +1,8 @@
 local function patient()
    local patient = {
+      Metadata = {
+         SourceId = ''
+      },
       PatientSearch = {
          PatientIdentifiers = {},
          PatientCoverages = {},
