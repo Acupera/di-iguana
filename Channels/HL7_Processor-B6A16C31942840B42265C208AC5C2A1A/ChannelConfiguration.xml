@@ -42,7 +42,7 @@
       error_handling="0"
       use_translator_filter="true"
       translator_guid="HL7_Processor-Filter-5k70CSNnE6etAJ"
-      translator_commit_id="6ba0135639416e3b589d9912992e7436182af11e"
-      translator_commit_comment="Defaulting Address.IsPrefferred for serialization.">
+      translator_commit_id="f2b084804d552a8da04ebc2a78fc2ae557c4f1d0"
+      translator_commit_comment="Defaulted coverage IsPrimary to false for serialization.">
    </message_filter>
 </channel>

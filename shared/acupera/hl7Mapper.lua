@@ -54,6 +54,7 @@ function entityMappers.mapCoverages(hl7Message, patient)
       coverage.StartDate = dateparse.parse(hl7Message.INSURANCE[i].IN1[12]:nodeValue())
       coverage.EndDate = dateparse.parse(hl7Message.INSURANCE[i].IN1[13]:nodeValue())
       coverage.LastCoverageValidationDateTime = dateparse.parse(hl7Message.EVN[2][1]:nodeValue())
+      coverage.IsPrimary = false
       
       if coverage.StartDate ~= '' then
          table.insert(patient.Coverages, coverage)
