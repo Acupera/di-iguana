@@ -160,6 +160,7 @@ function mappers.mapAll(hl7Message, patient)
    
    for i, address in pairs(patient.Addresses) do
       address.TimeZone = timeZone
+      address.AddressType = "Home"
       
       if i == 1 then address.IsPreferred = "TRUE" end
    end
