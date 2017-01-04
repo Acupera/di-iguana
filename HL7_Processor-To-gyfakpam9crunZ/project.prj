@@ -1,13 +1,14 @@
 {
     "LocalDependencies": [],
     "LuaDependencies": [
+        "acupera.applicationInsights",
         "acupera.azureStorageGateway",
         "acupera.translator",
         "log.annotate",
         "retry"
     ],
     "OtherDependencies": [],
-    "timestamp": "1482438329",
+    "timestamp": "1483545255",
     "version_info": {
         "build": 0,
         "major": 6,

@@ -1,14 +1,14 @@
 <channel
    name="HL7 Processor"
    guid="B6A16C31942840B42265C208AC5C2A1A"
-   description=""
+   description="Processes hl7 files."
    start_automatically="false"
    logging_level="1"
    use_message_filter="true">
    <to_mapper
       guid="HL7_Processor-To-gyfakpam9crunZ"
-      commit_id="8bbb91c65bc326ed69f48297505bb4489f85f821"
-      commit_comment="Import Translators: test import on running channel">
+      commit_id="6fdf67ca926571516173c9f0f72919dfb149272d"
+      commit_comment="Added argument to explicitly define the message source id for azure storage purposes.">
       <dequeue_list>
          <dequeue
             source_name="self"
@@ -42,7 +42,7 @@
       error_handling="0"
       use_translator_filter="true"
       translator_guid="HL7_Processor-Filter-5k70CSNnE6etAJ"
-      translator_commit_id="8bbb91c65bc326ed69f48297505bb4489f85f821"
-      translator_commit_comment="Import Translators: test import on running channel">
+      translator_commit_id="6fdf67ca926571516173c9f0f72919dfb149272d"
+      translator_commit_comment="Added argument to explicitly define the message source id for azure storage purposes.">
    </message_filter>
 </channel>

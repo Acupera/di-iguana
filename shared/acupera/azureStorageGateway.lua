@@ -12,10 +12,12 @@ local azureConstants = {
       blobType = "x-ms-blob-type"
    },
    blobs = {
-      combinedPatient = "dataintegration-combinedpatient"
+      combinedPatient = "dataintegration-combinedpatient",
+      applicationInsights = "dataintegration-iguana-applicationinsights"
    },
    queues = {
-      combinedPatient = "dataintegration-combinedpatient"
+      combinedPatient = "dataintegration-combinedpatient",
+      applicationInsights = "dataintegration-iguana-applicationinsights"
    },
    retryDefaults = {
       times = 5,
@@ -84,15 +86,15 @@ local function retryRestErrorHandler(success, errMsgOrReturnCode, response)
    return isSuccessful
 end
 
-local function blobPut(blobContainer, data)
+local function blobPut(blobContainer, data, messageSourceId)
    local restCall = function()
       local time = os.ts.gmdate(azureConstants.azureDateFormat)
       local message = json.serialize{data=data}:gsub('\r', ''):compactWS()
       local result, httpStatus, headers = net.http.post{
          method="PUT",
-         url=os.getenv("azureStorageAccount.blob.url")..blobContainer.."/"..data.Metadata.SourceId,
+         url=os.getenv("azureStorageAccount.blob.url")..blobContainer.."/"..messageSourceId,
          headers={
-            Authorization = getAuthorizationHeader("PUT", time, message, blobContainer.."/"..data.Metadata.SourceId, { "x-ms-blob-type:BlockBlob" }),
+            Authorization = getAuthorizationHeader("PUT", time, message, blobContainer.."/"..messageSourceId, { "x-ms-blob-type:BlockBlob" }),
             [azureConstants.headers.date] = time,
             [azureConstants.headers.version] = azureConstants.azureAPIVersion,
             ["Content-Length"] = string.len(message),
@@ -109,10 +111,10 @@ local function blobPut(blobContainer, data)
    return retry.call{func=restCall, retry=azureConstants.retryDefaults.times, pause=azureConstants.retryDefaults.pause, errorfunc=retryRestErrorHandler}
 end
 
-local function queuePut(queueName, data)
+local function queuePut(queueName, data, messageSourceId)
    local restCall = function()
       local time = os.ts.gmdate(azureConstants.azureDateFormat)
-      local payloadBody = { blobName = data.Metadata.SourceId }
+      local payloadBody = { blobName = messageSourceId }
       local payload = {
          Headers = {
             ["NServiceBus.MessageId"] = util.guid(128),
@@ -150,7 +152,7 @@ local function queuePut(queueName, data)
       return true, { data = result, code = httpStatus, headers = headers, successCodes = { [201]=true } }
    end
    
-   blobPut(azureConstants.blobs.combinedPatient, data)
+   blobPut(queueName, data, messageSourceId)
    
    return retry.call{func=restCall, retry=azureConstants.retryDefaults.times, pause=azureConstants.retryDefaults.pause, errorfunc=retryRestErrorHandler}
 end

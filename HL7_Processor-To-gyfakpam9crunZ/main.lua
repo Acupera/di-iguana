@@ -2,10 +2,12 @@ require 'log.annotate'
 local azureStorageGateway = require "acupera.azureStorageGateway"
 local translator = require "acupera.translator"
 
-local function RunTranslator(Data)
-   azureStorageGateway.queue.put(azureStorageGateway.azureConstants.queues.combinedPatient, json.parse{data=Data})
+local function RunTranslator(patient)
+   azureStorageGateway.queue.put(azureStorageGateway.azureConstants.queues.combinedPatient, patient, patient.Metadata.SourceId)
 end
 
 function main(Data)
-   translator.run(RunTranslator, Data)
+   local patient = json.parse{data=Data}
+   
+   translator.run(function() RunTranslator(patient) end, patient.Metadata.SourceId)
 end
