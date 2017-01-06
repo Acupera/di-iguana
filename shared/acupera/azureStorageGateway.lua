@@ -2,6 +2,7 @@ require 'log.annotate'
 
 local retry = require "retry"
 
+local httpCallsAreLive = false
 local azureConstants = {
    azureDateFormat = "%a, %d %b %Y %H:%M:%S GMT",
    azureAPIVersion = "2015-12-11",
@@ -94,7 +95,7 @@ local function blobPut(blobContainer, data, messageSourceId)
          method="PUT",
          url=os.getenv("azureStorageAccount.blob.url")..blobContainer.."/"..messageSourceId,
          headers={
-            Authorization = getAuthorizationHeader("PUT", time, message, blobContainer.."/"..messageSourceId, { "x-ms-blob-type:BlockBlob" }),
+            Authorization = getAuthorizationHeader("PUT", time, message, blobContainer.."/"..messageSourceId, { azureConstants.headers.blobType..":BlockBlob" }),
             [azureConstants.headers.date] = time,
             [azureConstants.headers.version] = azureConstants.azureAPIVersion,
             ["Content-Length"] = string.len(message),
@@ -102,7 +103,7 @@ local function blobPut(blobContainer, data, messageSourceId)
          },
          body=message
          ,debug=iguana.isTest()
-         ,live=true
+         ,live=httpCallsAreLive
       }
       
       return true, { data = result, code = httpStatus, headers = headers, successCodes = { [201]=true } }
@@ -146,7 +147,7 @@ local function queuePut(queueName, data, messageSourceId)
          },
          body=message
          ,debug=iguana.isTest()
-         ,live=true
+         ,live=httpCallsAreLive
       }
       
       return true, { data = result, code = httpStatus, headers = headers, successCodes = { [201]=true } }

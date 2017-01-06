@@ -70,9 +70,9 @@ end
 
 function lookupGender(genderCode)
 	local codeToDescriptionMappings = {
-      ["M"] = "Male",
-	   ["F"] = "Female",
-      ["U"] = "Unknown"
+      ["M"] = "M",
+	   ["F"] = "F",
+      ["U"] = "U"
    }
    
    if codeToDescriptionMappings[genderCode] ~= nil then
