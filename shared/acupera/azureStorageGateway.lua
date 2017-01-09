@@ -118,23 +118,11 @@ local function queuePut(queueName, data, messageSourceId)
       local payloadBody = { blobName = messageSourceId }
       local payload = {
          Headers = {
-            ["NServiceBus.MessageId"] = util.guid(128),
-            ["NServiceBus.CorrelationId"] = "38fc10c3-aa7b-4737-9702-a6de00904155",
-            ["NServiceBus.MessageIntent"] = "Send",
-            ["NServiceBus.Version"] = "5.2.14",
-            ["NServiceBus.ContentType"] = "application/json",
-            ["NServiceBus.EnclosedMessageTypes"] = "DataIntegration.Messages.CombinedPatientCommand, DataIntegration.Messages, Version=1.0.0.0, "..
-               "Culture=neutral, PublicKeyToken=null;DataIntegration.Messages.IDataIntegrationCommand, DataIntegration.Messages, Version=1.0.0.0, "..
-               "Culture=neutral, PublicKeyToken=null;DataIntegration.Messages.IDataIntegrationRunCommand, DataIntegration.Messages, Version=1.0.0.0, "..
-               "Culture=neutral, PublicKeyToken=null;DataIntegration.Messages.DataIntegrationCommand, DataIntegration.Messages, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
-            ["NServiceBus.ConversationId"] = "264804b5-60e6-4957-84e7-a6de00904178",
-            ["WinIdName"] = iguana.id(),
-            ["NServiceBus.OriginatingMachine"] = "KASTURI-LAPTOP",
-            ["NServiceBus.OriginatingEndpoint"] = "DataIntegrationConsole",
-            ["$.diagnostics.originating.hostid"] = "cc27376f935b88a46e56a6ae9e905324"
+            ["NServiceBus.MessageId"] = messageSourceId,
+            ["NServiceBus.EnclosedMessageTypes"] = "DataIntegration.Messages.CombinedPatientCommand"
          },
          ReplyToAddress = iguana.id().."@test",
-         Body = "77u/"..filter.base64.enc(json.serialize{data=payloadBody})
+         Body = filter.base64.enc(json.serialize{data=payloadBody})
       }
       local message = '<QueueMessage><MessageText>'..filter.base64.enc(json.serialize{data=payload})..'</MessageText></QueueMessage>'
       local result, httpStatus, headers = net.http.post{
@@ -157,6 +145,21 @@ local function queuePut(queueName, data, messageSourceId)
    
    return retry.call{func=restCall, retry=azureConstants.retryDefaults.times, pause=azureConstants.retryDefaults.pause, errorfunc=retryRestErrorHandler}
 end
+
+help.set{input_function = queuePut, help_data = {
+      Title = "acupera.azureStorageGateway.queuePut",
+      Usage = "azureStorageGateway.queue.put(queueName, data, messageSourceId)",
+      Desc = "Pops a message to an Azure Storage Queue whose body contains a link to a Blob that stores the data.",
+      Parameters = {
+         { queueName = { Desc = "Name of the Azure Storage Queue." }},
+         { data = { Desc = "Serialized json data." }},
+         { messageSourceId = { Desc = "Unique identifier for the incoming message." }}
+      },
+      Returns = { { Desc = "bool" }},
+      Examples = { 
+         "azureStorageGateway.queue.put(azureStorageGateway.azureConstants.queues.combinedPatient, patient, patient.Metadata.SourceId)",
+         "azureStorageGateway.azureConstants.queues.applicationInsights, exceptionTelemetry, exceptionTelemetry.context.properties['iguana.sourceId']" }
+}}
 
 return {
    azureConstants = azureConstants,

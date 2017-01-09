@@ -42,6 +42,27 @@ function trackTypes.exceptionTelemetry(message, stackTrace)
    }
 end
 
+help.set{input_function = trackTypes.exceptionTelemetry, help_data = {
+      Title = "acupera.applicationInsights.trackTypes.exceptionTelemetry",
+      Usage = "applicationInsights.trackTypes.exceptionTelemetry(message, stackTrace)",
+      Desc = "Creates an ExceptionTelemetry object initialized with channel/project/message details for tracking.",
+      Parameters = {
+         { message = { Desc = "Error message." }},
+         { stackTrace = { Desc = "Lua stack trace." }}
+      },
+      Returns = { { Desc = "ExceptionTelemetry table" }},
+      Examples = { "applicationInsights.trackTypes.exceptionTelemetry(errorMessage, debug.traceback())" }
+}}
+
+help.set{input_function = trackException, help_data = {
+      Title = "acupera.applicationInsights.trackException",
+      Usage = "applicationInsights.trackException(exceptionTelemetry)",
+      Desc = "Pushes an ExceptionTelemetry object to Azure Application Insights.",
+      Parameters = { { exceptionTelemetry = { Desc = "ExceptionTelemetry object." }}},
+      Returns = nil,
+      Examples = { "applicationInsights.trackException(exceptionTelemetry)" }
+}}
+
 return {
    trackTypes = trackTypes,
 	trackException = trackException

@@ -14,6 +14,18 @@ local function run(main, messageSourceId)
    end
 end
 
+help.set{input_function = run, help_data = {
+      Title = "acupera.translator.run",
+      Usage = "translator.run(function() mainFunction() end, messageSourceId)",
+      Desc = "This is the core wrapper for any acupera Translator component allowing all code to be managed in a standard fashion, including global error handling.",
+      Parameters = {
+         { main = { Desc = "Translator's main function to be run." }},
+         { messageSourceId = { Desc = "The message's unique identifier to trace through the DI process end-to-end." }}
+      },
+      Returns = nil,
+      Examples = { "translator.run(function() RunTranslator(hl7Message, vmdConfigurationName) end, hl7Message.MSH[10]:nodeValue())" }
+}}
+
 return {
    run = run
 }

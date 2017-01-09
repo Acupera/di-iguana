@@ -116,6 +116,15 @@ local function tag()
    }
 end
 
+help.set{input_function = patient, help_data = {
+      Title = "acupera.combinedPatient.patient",
+      Usage = "combinedPatient.patient()",
+      Desc = "Creates an empty CombinedPatient for strongly-typed use in the Translator.",
+      Parameters = nil,
+      Returns = { { Desc = "CombinedPatient table" }},
+      Examples = { "combinedPatient.patient()" }
+}}
+
 return {
    address = address,
    patient = patient,

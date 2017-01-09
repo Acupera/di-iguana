@@ -167,6 +167,28 @@ local function map(hl7Message)
    return patient
 end
 
+help.set{input_function = isSupported, help_data = {
+      Title = "acupera.hl7Mapper.isSupported",
+      Usage = "mapper.isSupported(hl7Message)",
+      Desc = "Determines if the message has a default mapping and is supported by the client.",
+      Parameters = {
+         { hl7Message = { Desc = "An HL7 node tree of the message coming into the channel." }}
+      },
+      Returns = { { Desc = "bool" }},
+      Examples = { "mapper.isSupported(hl7Message)" }
+}}
+
+help.set{input_function = map, help_data = {
+      Title = "acupera.hl7Mapper.map",
+      Usage = "mapper.map(hl7Message)",
+      Desc = "This is the central method used to map any HL7 message to a CombinedPatient. It handles default mappings as well as custom client mappings.",
+      Parameters = {
+         { hl7Message = { Desc = "An HL7 node tree of the message coming into the channel." }}
+      },
+      Returns = { { Desc = "CombinedPatient table" }},
+      Examples = { "mapper.map(hl7Message)" }
+}}
+
 return {
    isSupported = isSupported,
    map = map

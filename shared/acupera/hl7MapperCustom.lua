@@ -47,6 +47,28 @@ local function map(hl7Message, patient)
    customMapper[getMapperName(hl7Message)](hl7Message, patient)
 end
 
+help.set{input_function = isSupported, help_data = {
+      Title = "acupera.hl7MapperCustom.isSupported",
+      Usage = "mapper.isSupported(hl7Message)",
+      Desc = "Determines if the message is supported by the client.",
+      Parameters = {
+         { hl7Message = { Desc = "An HL7 node tree of the message coming into the channel." }}
+      },
+      Returns = { { Desc = "bool" }},
+      Examples = { "mapper.isSupported(hl7Message)" }
+}}
+
+help.set{input_function = map, help_data = {
+      Title = "acupera.hl7MapperCustom.map",
+      Usage = "mapper.map(hl7Message)",
+      Desc = "Performs client-specific mapping of the HL7 message to the CombinedPatient.",
+      Parameters = {
+         { hl7Message = { Desc = "An HL7 node tree of the message coming into the channel." }}
+      },
+      Returns = nil,
+      Examples = { "mapper.map(hl7Message)" }
+}}
+
 return {
    isSupported = isSupported,
    map = map
