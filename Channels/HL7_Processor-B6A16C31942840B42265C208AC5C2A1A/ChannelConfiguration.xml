@@ -7,8 +7,8 @@
    use_message_filter="true">
    <to_mapper
       guid="HL7_Processor-To-gyfakpam9crunZ"
-      commit_id="6fdf67ca926571516173c9f0f72919dfb149272d"
-      commit_comment="Added argument to explicitly define the message source id for azure storage purposes.">
+      commit_id="53d31c8bbee46b60446a47f35290911d57d303de"
+      commit_comment="Import Translators: Build server">
       <dequeue_list>
          <dequeue
             source_name="self"
@@ -19,13 +19,13 @@
       file_type="HL7"
       prepend_file_info="false"
       eof_char=""
-      poll_time="10000"
+      poll_time="1000"
       max_message_size="15728640"
       source_dir="${channels.hl7Processor.sourceDirectory}/"
       source_file_extension="hl7"
       archive_processed_files="true"
-      processed_dir="${c​h​a​n​n​e​l​s​.​h​l​7​P​r​o​c​e​s​s​o​r​.processedD​i​r​e​c​t​o​r​y​}/"
-      error_dir="${​c​h​a​n​n​e​l​s​.​h​l​7​P​r​o​c​e​s​s​o​r​.​error​D​i​r​e​c​t​o​r​y​}/"
+      processed_dir="${channels.hl7Processor.processedDirectory}/"
+      error_dir="${channels.hl7Processor.errorDirectory}/"
       ignored_segments=""
       segment_delimiter="0x0D"
       message_delimiter="0x0A"
@@ -42,7 +42,7 @@
       error_handling="0"
       use_translator_filter="true"
       translator_guid="HL7_Processor-Filter-5k70CSNnE6etAJ"
-      translator_commit_id="6fdf67ca926571516173c9f0f72919dfb149272d"
-      translator_commit_comment="Added argument to explicitly define the message source id for azure storage purposes.">
+      translator_commit_id="53d31c8bbee46b60446a47f35290911d57d303de"
+      translator_commit_comment="Import Translators: Build server">
    </message_filter>
 </channel>
