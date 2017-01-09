@@ -15,7 +15,7 @@ local function run(main, messageSourceId)
 end
 
 help.set{input_function = run, help_data = {
-      Title = "acupera.translator.run",
+      Title = "acupera.translator.run test",
       Usage = "translator.run(function() mainFunction() end, messageSourceId)",
       Desc = "This is the core wrapper for any acupera Translator component allowing all code to be managed in a standard fashion, including global error handling.",
       Parameters = {
