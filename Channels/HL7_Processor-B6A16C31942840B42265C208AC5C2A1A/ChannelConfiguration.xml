@@ -7,8 +7,8 @@
    use_message_filter="true">
    <to_mapper
       guid="HL7_Processor-To-gyfakpam9crunZ"
-      commit_id="53d31c8bbee46b60446a47f35290911d57d303de"
-      commit_comment="Import Translators: Build server">
+      commit_id="97b979d62fa99584b375181ef23ba0ea729bad78"
+      commit_comment="Import Translators: Build server push.">
       <dequeue_list>
          <dequeue
             source_name="self"
@@ -42,7 +42,7 @@
       error_handling="0"
       use_translator_filter="true"
       translator_guid="HL7_Processor-Filter-5k70CSNnE6etAJ"
-      translator_commit_id="53d31c8bbee46b60446a47f35290911d57d303de"
-      translator_commit_comment="Import Translators: Build server">
+      translator_commit_id="97b979d62fa99584b375181ef23ba0ea729bad78"
+      translator_commit_comment="Import Translators: Build server push.">
    </message_filter>
 </channel>
