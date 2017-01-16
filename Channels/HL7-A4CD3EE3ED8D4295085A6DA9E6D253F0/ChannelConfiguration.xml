@@ -1,12 +1,12 @@
 <channel
    name="HL7"
    guid="A4CD3EE3ED8D4295085A6DA9E6D253F0"
-   description=""
+   description="Accepts HL7 message over LLP."
    start_automatically="false"
    logging_level="1"
    use_message_filter="false">
    <to_file
-      output_dir="F:/Data Integration/HL7/Processed/"
+      output_dir="${channels.hl7Processor.sourceDirectory}/"
       write_to_separate_file="true"
       output_single_filename=""
       use_prepended_info_as_filename="false"
